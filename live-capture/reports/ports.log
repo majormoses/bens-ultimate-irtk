@@ -1,0 +1,22 @@
+
+Active Connections
+
+  Proto  Local Address          Foreign Address        State
+  TCP    127.0.0.1:5939         gates-of-infrno:49170  ESTABLISHED
+  TCP    127.0.0.1:49168        gates-of-infrno:49169  ESTABLISHED
+  TCP    127.0.0.1:49169        gates-of-infrno:49168  ESTABLISHED
+  TCP    127.0.0.1:49170        gates-of-infrno:5939   ESTABLISHED
+  TCP    192.168.1.31:49163     server1501:5938        ESTABLISHED
+  TCP    192.168.1.31:49165     dal10-c:https          ESTABLISHED
+  TCP    192.168.1.31:49303     stackoverflow:http     ESTABLISHED
+  TCP    192.168.1.31:49419     157.55.235.151:40046   ESTABLISHED
+  TCP    192.168.1.31:49420     by2msg3010610:https    ESTABLISHED
+  TCP    192.168.1.31:49421     78.141.179.17:12350    ESTABLISHED
+  TCP    192.168.1.31:49451     174-23-170-75:47525    ESTABLISHED
+  TCP    192.168.1.31:50909     207-109-73-81:http     ESTABLISHED
+  TCP    192.168.1.31:50949     207-109-73-137:http    ESTABLISHED
+  TCP    [2605:bc00:2:2:20fe:1968:8527:5901]:49227  [2607:f8b0:400e:c01::7d]:5222  ESTABLISHED
+  TCP    [2605:bc00:2:2:20fe:1968:8527:5901]:49229  lax04s09-in-x15:https  ESTABLISHED
+  TCP    [2605:bc00:2:2:20fe:1968:8527:5901]:49235  lax04s09-in-x11:https  ESTABLISHED
+  TCP    [2605:bc00:2:2:20fe:1968:8527:5901]:49251  da-in-xbd:https        ESTABLISHED
+  TCP    [2605:bc00:2:2:20fe:1968:8527:5901]:49297  lax04s09-in-x06:https  ESTABLISHED
