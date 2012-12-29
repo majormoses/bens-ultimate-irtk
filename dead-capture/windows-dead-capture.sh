@@ -32,9 +32,9 @@
 # Get Local Time and Date
 
 # Get Time from pool.ntp.org
-
+date > $reports/pool-ntp.out
 # Gets Logical and Physical Disks
-
+fdisk -l > $reports/disk-layout.out
 # Get files and folders on system, sorted by date
 ls -lRa $mountedSystem/ > $reports/files-sorted.out
 
@@ -45,7 +45,6 @@ ls -lRa $mountedSystem/ > $reports/files-sorted.out
 # export HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\services\Tcpip6\Parameters\Interfaces
 # List all Windows Firewall Rules
 
-# Capture list of Scheduled Tasks
 
 # List of Users
 
