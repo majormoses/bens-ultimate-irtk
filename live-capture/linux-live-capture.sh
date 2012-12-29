@@ -46,13 +46,13 @@ netstat -ape > $remoteReports/ports.out
 sudo iptables -L -V -n
 
 # Capture outgoing traffic for 15 minutes
-sudo tcpdump -G 300 -W 1 -w file.pcap
+sudo tcpdump -G 300 -W 1 -w $remoteReports/net-traffic.pcap
 
 # Verify Linux tools have not been tampered with
 #debian based systems
-debsums -clsg > debsums.out &
+debsums -clsg > $remoteReports/debsums.out &
 # RHEL rpm systems
-rpm -Va > rpm-md5.out &
+rpm -Va > $remoteReports/rpm-md5.out &
 
 # Grab version of kernel
 uname -r > $remoteReports/kern-version.out
@@ -63,10 +63,14 @@ lsmod > $remoteReports/kern-modules.out
 # Grab detailed information about kernel modules loaded
 for i in $(lsmod | awk '{print $1}');
 do
-	modinfo $i >> drivers-loaded.out;
+	modinfo $i >> $remoteReports/drivers-loaded.out;
 done
 
 # grab /etc/
-rsync -arvP /etc remoteReports/etc
+rsync -arvP /etc $remoteReports/etc
 # grab /var/
-rsync -arvP /var remoteReports/var
+rsync -arvP /var $remoteReports/var
+
+# get list of installed packages
+dpk --get seletions > $remoteReports/deb-installed.out
+yum list installed > $remoteReports/yum-installed.out
