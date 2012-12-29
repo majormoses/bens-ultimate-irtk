@@ -28,6 +28,7 @@ LABEL REPORTLOCATION
 set liveCaptureLocation=D:\School\it\4600\live-capture\
 REM set /P remoteReports=[Where would you like these reports sent?]
 set remoteReports=D:\School\it\4600\reports\%COMPUTERNAME%
+echo %COMPUTERNAME% > %remoteReports\computername.out
 
 REM Get DATE
 echo "Your Machine thinks it is: " %DATE% > %remoteReports%\date.out
@@ -47,6 +48,8 @@ if %errorlevel%==1 do dd if=\\.\PhysicalMemory of=%remoteReports%\memory.img --p
 REM Get files and folders on system, sorted by date
 for /f %%f in ('wmic logicaldisk get caption') do for /f %%d in ('dir %%f') do dir /O-D /S %%f\ > %remoteReports%\files-by-date.out
 
+REM File/Folder tree
+for /f %%f in ('wmic logicaldisk get caption') do tree.com /A %%f >> \Users\diablo\Desktop\sp\tree.out
 
 REM List Running Processes and Process Tree
 LABEL TASKSRUNNNING
@@ -55,7 +58,7 @@ tasklist.exe > %remoteReports%\reports\processes.out
 
 REM List all open ports
 LABEL OPENPORTS
-netstat.exe -abe > %remoteReports%\ports.out
+netstat.exe -abo > %remoteReports%\ports.out
 
 REM Check Windows Resources for integrity violations
 LABEL SFC
@@ -147,5 +150,15 @@ else(
 	echo "you must have typed wrong, or don't have permission"
 	GOTO ASKROAMINGPROFILES)
 
+REM GPOINFO
+LABEL GPOINFO
+
+gpresult.exe /Z > %remoteReports%\gpo-info.out
+
+REM AD Info
+LABEL ADINFO
+
+
+	
 pause
 LABEL END
