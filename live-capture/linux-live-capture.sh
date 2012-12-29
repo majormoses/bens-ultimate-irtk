@@ -30,6 +30,12 @@ bash -e
 sudo memdump > memdump.out
 #sudo dd if=/dev/mem of=$remoteReports/ramdd.out
 
+# Get hostname
+hostname > $remoteReports/hostname.out
+
+# Get date
+adte > $remoteReports/date.out
+
 # List of running processes
 ps aux > $remoteReports/processes.out
 
