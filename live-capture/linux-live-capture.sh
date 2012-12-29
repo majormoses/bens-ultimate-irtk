@@ -31,46 +31,46 @@ sudo memdump > memdump.out
 #sudo dd if=/dev/mem of=$remoteReports/ramdd.out
 
 # Get hostname
-hostname > $remoteReports/hostname.out
+hostname > $reports/hostname.out
 
 # Get date
-adte > $remoteReports/date.out
+adte > $reports/date.out
 
 # List of running processes
-ps aux > $remoteReports/processes.out
+ps aux > $reports/processes.out
 
 # List of open ports
-netstat -ape > $remoteReports/ports.out
+netstat -ape > $reports/ports.out
 
 # firewall rules
 sudo iptables -L -V -n
 
 # Capture outgoing traffic for 15 minutes
-sudo tcpdump -G 300 -W 1 -w $remoteReports/net-traffic.pcap
+sudo tcpdump -G 300 -W 1 -w $reports/net-traffic.pcap
 
 # Verify Linux tools have not been tampered with
 #debian based systems
-debsums -clsg > $remoteReports/debsums.out &
+debsums -clsg > $reports/debsums.out &
 # RHEL rpm systems
-rpm -Va > $remoteReports/rpm-md5.out &
+rpm -Va > $reports/rpm-md5.out &
 
 # Grab version of kernel
-uname -r > $remoteReports/kern-version.out
+uname -r > $reports/kern-version.out
 
 # Grab kernel modules loaded
-lsmod > $remoteReports/kern-modules.out
+lsmod > $reports/kern-modules.out
 
 # Grab detailed information about kernel modules loaded
 for i in $(lsmod | awk '{print $1}');
 do
-	modinfo $i >> $remoteReports/drivers-loaded.out;
+	modinfo $i >> $reports/drivers-loaded.out;
 done
 
 # grab /etc/
-rsync -arvP /etc $remoteReports/etc
+rsync -arvP /etc $reports/etc
 # grab /var/
-rsync -arvP /var $remoteReports/var
+rsync -arvP /var $reports/var
 
 # get list of installed packages
-dpk --get seletions > $remoteReports/deb-installed.out
-yum list installed > $remoteReports/yum-installed.out
+dpk --get seletions > $reports/deb-installed.out
+yum list installed > $reports/yum-installed.out

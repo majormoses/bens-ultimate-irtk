@@ -26,58 +26,60 @@ echo %COMPUTERNAME%
 REM Mount a drive somewhere to copy reports to
 LABEL REPORTLOCATION
 set liveCaptureLocation=D:\School\it\4600\live-capture\
-REM set /P remoteReports=[Where would you like these reports sent?]
-set remoteReports=D:\School\it\4600\reports\%COMPUTERNAME%
-echo %COMPUTERNAME% > %remoteReports\computername.out
+REM set /P reports=[Where would you like these reports sent?]
+set reports=D:\School\it\4600\reports\%COMPUTERNAME%
+echo %COMPUTERNAME% > %reports%\computername.out
 
 REM Get DATE
-echo "Your Machine thinks it is: " %DATE% > %remoteReports%\date.out
+echo "Your Machine thinks it is: " %DATE% > %reports%\date.out
 
 REM Gets Logical and Physical Disks
 LABEL DRIVELAYOUT
-wmic diskdrive list brief > %remoteReports%\physicaldisks.out
-wmic logicaldisk get caption,volumename > %remoteReports%\logicaldisks.out
+wmic diskdrive list brief > %reports%\physicaldisks.out
+wmic logicaldisk get caption,volumename > %reports%\logicaldisks.out
 
 
 REM DUMP Physical Memory
 LABEL RAMDUMP
 choice.exe /C yn /M "Capture Ram: y/n. Timeout 10 seconds default No" /D n /T 10
 if %errorlevel%==2 do GOTO SFC
-if %errorlevel%==1 do dd if=\\.\PhysicalMemory of=%remoteReports%\memory.img --progress
+if %errorlevel%==1 do dd if=\\.\PhysicalMemory of=%reports%\memory.img --progress
 
 REM Get files and folders on system, sorted by date
-for /f %%f in ('wmic logicaldisk get caption') do for /f %%d in ('dir %%f') do dir /O-D /S %%f\ > %remoteReports%\files-by-date.out
+LABEL FILESBYDATE
+for /f %%f in ('wmic logicaldisk get caption') do for /f %%d in ('dir %%f') do dir /O-D /S %%f\ > %reports%\files-by-date.out
 
 REM File/Folder tree
+LABEL TREE
 for /f %%f in ('wmic logicaldisk get caption') do tree.com /A %%f >> \Users\diablo\Desktop\sp\tree.out
 
 REM List Running Processes and Process Tree
 LABEL TASKSRUNNNING
-tasklist.exe > %remoteReports%\reports\processes.out
-%liveCaptureLocation%\SysinternalsSuite\pslist.exe -t > %remoteReports%\ptree.out
+tasklist.exe > %reports%\reports\processes.out
+%liveCaptureLocation%\SysinternalsSuite\pslist.exe -t > %reports%\ptree.out
 
 REM List all open ports
 LABEL OPENPORTS
-netstat.exe -abo > %remoteReports%\ports.out
+netstat.exe -abo > %reports%\ports.out
 
 REM Check Windows Resources for integrity violations
 LABEL SFC
-sfc.exe /verifyonly > %remoteReports%\integrity.out
+sfc.exe /verifyonly > %reports%\integrity.out
 
 REM List all network configurations
 LABEL NETCONFIG
-ipconfig.exe /all > %remoteReports%\netconfig.out
+ipconfig.exe /all > %reports%\netconfig.out
 
 REM List all Windows Firewall Rules
 LABEL WINFIREWALL
-netsh advfirewall firewall show rule all > %remoteReports%\firewall.out
+netsh advfirewall firewall show rule all > %reports%\firewall.out
 
 REM Capture outgoing network traffic for 15 minutes
 LABEL NETCAPTURE
 
 REM Capture list of Scheduled Tasks
 LABEL SCHEDULEDTASKS
-schtasks.exe /query /fo LIST  > %remoteReports%\tasks.out
+schtasks.exe /query /fo LIST  > %reports%\tasks.out
 
 REM List of Users
 LABEL LISTUSERS
@@ -91,27 +93,27 @@ dir /B %profileBase%\* > users.out
 
 REM Capture all PATH variables
 LABEL PATHVARIABLES
-PATH > %remoteReports%\path.out
+PATH > %reports%\path.out
 
 REM List Startup Applications
-wmic startup get caption,name,location > %remoteReports%\startup.out
+wmic startup get caption,name,location > %reports%\startup.out
 
 
 REM Capture several Windows Logs {Security, System, Application}
 LABEL WINLOGS
-wevtutil.exe epl Security %remoteReports%\security.evt
-wevtutil.exe epl System %remoteReports%\system.evt
-wevtutil.exe epl Application %remoteReports%\application.evt
+wevtutil.exe epl Security %reports%\security.evt
+wevtutil.exe epl System %reports%\system.evt
+wevtutil.exe epl Application %reports%\application.evt
 
 REM Export Registery
 LABEL EXPORTREG
-regedit /e %remoteReports%\registery.reg
+regedit /e %reports%\registery.reg
 
 REM Tries to get a list of instaled software
 LABEL INSTALLEDPROGRAMS
-If Exist %remoteReports%\installed-export.out Del %remoteReports%\installed-export.out
-regedit /e %remoteReports%\installed-export.out "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall"
-find "DisplayName" %remoteReports%\installed-export.out > %remoteReports%\installed.out
+If Exist %reports%\installed-export.out Del %reports%\installed-export.out
+regedit /e %reports%\installed-export.out "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall"
+find "DisplayName" %reports%\installed-export.out > %reports%\installed.out
 
 
 REM Grab list of downloads
@@ -132,7 +134,7 @@ if %errorlevel%==1 do GOTO ROAMINGDOWNLOADS
 
 REM Grab list of files in Downloads Folder
 LABEL GRABDOWNLOADS
-for /f %%f in ('dir /b %profileBase%\') do for /f %%d in ('dir /b %profileBase%\%%f\Downloads') do dir /S %profileBase%\%%f\Downloads > %remoteReports%\downloads.out
+for /f %%f in ('dir /b %profileBase%\') do for /f %%d in ('dir /b %profileBase%\%%f\Downloads') do dir /S %profileBase%\%%f\Downloads > %reports%\downloads.out
 
 REM Get Roaming Profiles
 LABEL GETROAMINGPROFILELOCATION
@@ -145,7 +147,7 @@ SET /P roamingProfileBase=[Where are your roaming profiles exsist?]
 if exsist %roamingProfileBase% (
 	for /f %%f in ('dir /b %roamingProfileBase%\') ^
 	 do for /f %%d in ('dir /b %roamingProfileBase%\%%f\Downloads') ^
-	 do dir /S %roamingProfileBase%\%%f\Downloads > %remoteReports%\roaming-downloads.out)
+	 do dir /S %roamingProfileBase%\%%f\Downloads > %reports%\roaming-downloads.out)
 else(
 	echo "you must have typed wrong, or don't have permission"
 	GOTO ASKROAMINGPROFILES)
@@ -153,7 +155,7 @@ else(
 REM GPOINFO
 LABEL GPOINFO
 
-gpresult.exe /Z > %remoteReports%\gpo-info.out
+gpresult.exe /Z > %reports%\gpo-info.out
 
 REM AD Info
 LABEL ADINFO
