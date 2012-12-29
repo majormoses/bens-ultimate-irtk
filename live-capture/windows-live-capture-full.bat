@@ -157,6 +157,10 @@ LABEL GPOINFO
 
 gpresult.exe /Z > %reports%\gpo-info.out
 
+REM AUTORUNSETC
+LABEL AUTORUNSETC
+embeded\SysinternalSuite\autoruns.exe -ev %reports%\autoruns.arn
+
 REM AD Info
 LABEL ADINFO
 
