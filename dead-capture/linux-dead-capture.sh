@@ -50,20 +50,20 @@ sudo iptables -L -V -n
 
 # Verify Linux tools have not been tampered with
 #debian
-debsums -clsg >debsums.out &
+debsums -clsg > $remoteReport/debsums.out &
 # EPL rpm systems
 rpm -Va > rpm-md5.out &
 
 # Grab version of kernel
-ls -l $chrootedSystem/boot/ | grep vmlinuz | awk '{print $8}' | tail -1 > kern-version.out
+ls -l $chrootedSystem/boot/ | grep vmlinuz | awk '{print $8}' | tail -1 > $remoteReports/kern-version.out
 
 # Grab kernel modules loaded
-lsmod > kern-modules-loaded.out
+lsmod > $remoteReports/kern-modules-loaded.out
 
 # Grab detailed information about kernel modules loaded
 for i in $(lsmod | awk '{print $1}');
 do
-	modinfo $i >> drivers-loaded.out;
+	modinfo $i >> $remoteReports/drivers-loaded.out;
 done
 
 # grab /etc/
