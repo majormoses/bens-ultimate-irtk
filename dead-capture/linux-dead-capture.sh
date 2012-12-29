@@ -34,7 +34,7 @@ read deadCaptureRoot
 
 
 chrootedSystem='/media/root'
-remoteReports=
+reports=
 
 
 #chroot
