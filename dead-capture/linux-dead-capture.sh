@@ -23,19 +23,14 @@ bash -e
 #     along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.html/>.
 
 
-
 # Mount some storage to save reports to
 fdisk -l
 echo 'modify system partition layout before continuing'
 echo 'root in dev/sdXY'
 read deadCaptureRoot
 
-
-
-
 chrootedSystem='/media/root'
 reports=
-
 
 #chroot
 mkdir -p /media/root/
@@ -46,7 +41,6 @@ chroot $chrootedSystem
 
 # firewall rules
 sudo iptables -L -V -n
-
 
 # Verify Linux tools have not been tampered with
 #debian

@@ -1,0 +1,23 @@
+<html>
+	<body>
+		<h1> This is a quick breakdown of output if using rpm to verify packages. </h1>
+		<p> If there is NO output everthing apears to be OK (mind you that we are using a tool on a 
+		possibly compromised system if you want to make sure use a dead system with a clean rpm package. 
+		The following are breakdowns of what the output means. <br /> <br />
+		The following are very worrisome and deserve immediate attention:
+		<ul>
+			<li> S - File has changed size </li>
+			<li> M - File mode has changed (permissions) </li>
+			<li> 5 - File md5 checksum has changed (have you modified it such as sudoers? Most deserving attention) </li>
+			<li> U - File owner has changed </li>
+			<li> G - File group has changed </li>
+		</ul>
+		The following are less worrisome but deserve some thought and attention:
+		<ul>
+			<li> D - Device major/minor number mismatch </li>
+			<li> L - readLink path mismatch </li>
+			<li> T - mTime differs </li>
+		</ul>
+	<br /> <br /> For more detailed information: man rpm
+	</body>
+</html>
