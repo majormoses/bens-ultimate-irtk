@@ -45,14 +45,16 @@ if [ $mcap=false ]; then
 	if [ -f /bin/memdumo || /sbin/memdump ]; then
 		sudo memdump > $reports/memdump.out
 		else
-			echo 'you must have me installed,'
+			echo 'either disable RAM dump or memdump needs to be installed'
 			if [ $distro == 'deb' ]; then
 				echo 'try: sudo apt-get install memdump'
+				exit
 			else
+				echo 'either disable RAM dump or memdump needs to be installed'
 				echo 'if rpmforge is not an enabled repo please add this repo'
 				echo 'if you are insure how to do this please visit: http://www.centos.org/docs/5/html/yum/sn-using-repositories.html'
 				echo 'once enabled try: sudo yum install memdump'
-				sudo memdump > $reports/memdump.out
+				exit
 	fi
 fi
 # Get hostname
