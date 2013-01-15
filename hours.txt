@@ -1,1 +1,4 @@
-70
+70 -- previous work before SP officially started
+Date		Hours		Total		Desc
+1/15		2.5			72.5		Spoke with Carry Cantrell about SP and wrote up official spec build (added to website http://benabrams.it/sp/spec.php)
+
