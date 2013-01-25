@@ -27,7 +27,7 @@ bash -e
 
 # CONFIG VARIABLES
 
-# storage location for reports
+# storage location for reports ( if value is ask it will prompt you for the location ) If you widh to preconfigure then simply put the path to the storage location
 storage='ask'
 reports=/media/$storage
 # length of desired packet capture this is in minutes
