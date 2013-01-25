@@ -51,12 +51,12 @@ for /f %%f in ('wmic logicaldisk get caption') do for /f %%d in ('dir %%f') do d
 
 REM File/Folder tree
 LABEL TREE
-for /f %%f in ('wmic logicaldisk get caption') do tree.com /A %%f >> \Users\diablo\Desktop\sp\tree.out
+for /f %%f in ('wmic logicaldisk get caption') do tree.com /A %%f >> %reports%\tree.out
 
-REM List Running Processes and Process Tree
+REM List Running Processes
 LABEL TASKSRUNNNING
-tasklist.exe > %reports%\reports\processes.out
-%liveCaptureLocation%\SysinternalsSuite\pslist.exe -t > %reports%\ptree.out
+tasklist.exe > %reports%\processes.out
+
 
 REM List all open ports
 LABEL OPENPORTS
