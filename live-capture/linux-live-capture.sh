@@ -108,7 +108,7 @@ adte > $reports/date.out
 ps aux > $reports/processes.out
 
 # List of open ports
-netstat -ape > $reports/ports.out
+netstat -ae > $reports/ports.out
 
 # firewall rules
 sudo iptables -L -V -n

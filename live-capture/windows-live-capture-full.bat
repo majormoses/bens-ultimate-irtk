@@ -19,15 +19,19 @@ REM
 REM	You should have received a copy of the GNU General Public License
 REM	along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.html/>.
 
+REM DEBUG MODE IF debug=1 debugging is enabled IF debug=0 debugging is off
+LABEL DEBUGMODE
+set debug=1
+
 
 REM Get computer name
 echo %COMPUTERNAME%
 
 REM Mount a drive somewhere to copy reports to
 LABEL REPORTLOCATION
-set liveCaptureLocation=D:\School\it\4600\live-capture\
 REM set /P reports=[Where would you like these reports sent?]
-set reports=D:\School\it\4600\reports\%COMPUTERNAME%
+set reports=C:\Users\%USERNAME%\Desktop\sp\reports\live-capture\windows\%COMPUTERNAME%
+mkdir %reports%
 echo %COMPUTERNAME% > %reports%\computername.out
 
 REM Get DATE
@@ -41,13 +45,15 @@ wmic logicaldisk get caption,volumename > %reports%\logicaldisks.out
 
 REM DUMP Physical Memory
 LABEL RAMDUMP
+echo 'this can take a really long time'
 choice.exe /C yn /M "Capture Ram: y/n. Timeout 10 seconds default No" /D n /T 10
 if %errorlevel%==2 do GOTO SFC
 if %errorlevel%==1 do dd if=\\.\PhysicalMemory of=%reports%\memory.img --progress
 
 REM Get files and folders on system, sorted by date
 LABEL FILESBYDATE
-for /f %%f in ('wmic logicaldisk get caption') do for /f %%d in ('dir %%f') do dir /O-D /S %%f\ > %reports%\files-by-date.out
+echo 'this can take a really long time, getting started'
+for /f %%f in ('wmic logicaldisk get caption') do for /f %%d in ('dir %%f') do dir /O-D /S %%f\ >> %reports%\files-by-date.out
 
 REM File/Folder tree
 LABEL TREE
