@@ -1,3 +1,4 @@
+cls
 REM	Windows Live Capture: This software is inteded to be used
 REM	for a live capture on a compromised Windows Server 2003-2008,
 REM	and Windows 7 Pro and some functionality may work in Windows XP.
@@ -20,75 +21,85 @@ REM	You should have received a copy of the GNU General Public License
 REM	along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.html/>.
 
 REM DEBUG MODE IF debug=1 debugging is enabled IF debug=0 debugging is off
-LABEL DEBUGMODE
+:DEBUGMODE
 set debug=1
 
 
-REM Get computer name
-echo %COMPUTERNAME%
-
 REM Mount a drive somewhere to copy reports to
-LABEL REPORTLOCATION
+:REPORTLOCATION
 REM set /P reports=[Where would you like these reports sent?]
 set reports=C:\Users\%USERNAME%\Desktop\sp\reports\live-capture\windows\%COMPUTERNAME%
 mkdir %reports%
+if %debug%==1 (
+	echo '#### report location completed ####' >> %reports%\debug.txt)
+	
 echo %COMPUTERNAME% > %reports%\computername.out
-
+if %debug%==1 (
+	echo '#### computer name completed ####' >> %reports%\debug.txt)
 REM Get DATE
 echo "Your Machine thinks it is: " %DATE% > %reports%\date.out
-
+if %debug%==1 (
+	echo '#### get date completed ####' >> %reports%\debug.txt)
 REM Gets Logical and Physical Disks
-LABEL DRIVELAYOUT
+:DRIVELAYOUT
 wmic diskdrive list brief > %reports%\physicaldisks.out
+if %debug%==1 (
+	echo '#### get physical disk completed ####' >> %reports%\debug.txt)
 wmic logicaldisk get caption,volumename > %reports%\logicaldisks.out
-
+if %debug%==1 (
+	echo '#### get logical disk completed ####' >> %reports%\debug.txt)
 
 REM DUMP Physical Memory
-LABEL RAMDUMP
+:RAMDUMP
 echo 'this can take a really long time'
 choice.exe /C yn /M "Capture Ram: y/n. Timeout 10 seconds default No" /D n /T 10
-if %errorlevel%==2 do GOTO SFC
+if %debug%==1 (
+	echo '#### RAM DUMP completed ####' >> %reports%\debug.txt
+	if %errorlevel%==2 echo 'skipping RAM DUMP' >> %reports\debug.txt)
+if %errorlevel%==2 do GOTO FILESBYDATE
 if %errorlevel%==1 do dd if=\\.\PhysicalMemory of=%reports%\memory.img --progress
-
+if %debug%==1 (
+	echo '#### RAM DUMP completed ####' >> %reports%\debug.txt)
 REM Get files and folders on system, sorted by date
-LABEL FILESBYDATE
+:FILESBYDATE
 echo 'this can take a really long time, getting started'
 for /f %%f in ('wmic logicaldisk get caption') do for /f %%d in ('dir %%f') do dir /O-D /S %%f\ >> %reports%\files-by-date.out
-
+if %debug%==1 (
+	echo '#### getting files by date completed ####' >> %reports%\debug.txt)
 REM File/Folder tree
-LABEL TREE
+:TREE
 for /f %%f in ('wmic logicaldisk get caption') do tree.com /A %%f >> %reports%\tree.out
 
 REM List Running Processes
-LABEL TASKSRUNNNING
+:PROCESSES
 tasklist.exe > %reports%\processes.out
 
 
 REM List all open ports
-LABEL OPENPORTS
+:OPENPORTS
 netstat.exe -abo > %reports%\ports.out
 
 REM Check Windows Resources for integrity violations
-LABEL SFC
+:SFC
 sfc.exe /verifyonly > %reports%\integrity.out
 
 REM List all network configurations
-LABEL NETCONFIG
+:NETCONFIG
 ipconfig.exe /all > %reports%\netconfig.out
 
 REM List all Windows Firewall Rules
-LABEL WINFIREWALL
+:WINFIREWALL
 netsh advfirewall firewall show rule all > %reports%\firewall.out
 
 REM Capture outgoing network traffic for 15 minutes
-LABEL NETCAPTURE
+:NETCAPTURE
 
 REM Capture list of Scheduled Tasks
-LABEL SCHEDULEDTASKS
+:SCHEDULEDTASKS
 schtasks.exe /query /fo LIST  > %reports%\tasks.out
 
 REM List of Users
-LABEL LISTUSERS
+:LISTUSERS
 IF EXSIST %HOMEDRIVE%\Users (
 	SET profileBase=%HOMEDRIVE%\Users)
 REM MUST BE XP/Server 2003
@@ -98,25 +109,26 @@ ELSE (
 dir /B %profileBase%\* > users.out
 
 REM Capture all PATH variables
-LABEL PATHVARIABLES
+:PATHVARIABLES
 PATH > %reports%\path.out
 
 REM List Startup Applications
+:STARTUPAPPLICATIONS
 wmic startup get caption,name,location > %reports%\startup.out
 
 
 REM Capture several Windows Logs {Security, System, Application}
-LABEL WINLOGS
+:WINLOGS
 wevtutil.exe epl Security %reports%\security.evt
 wevtutil.exe epl System %reports%\system.evt
 wevtutil.exe epl Application %reports%\application.evt
 
 REM Export Registery
-LABEL EXPORTREG
+:EXPORTREG
 regedit /e %reports%\registery.reg
 
 REM Tries to get a list of instaled software
-LABEL INSTALLEDPROGRAMS
+:INSTALLEDPROGRAMS
 If Exist %reports%\installed-export.out Del %reports%\installed-export.out
 regedit /e %reports%\installed-export.out "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall"
 find "DisplayName" %reports%\installed-export.out > %reports%\installed.out
@@ -132,18 +144,18 @@ echo "if you don't care about them answer"
 echo "the same as if you didnt have any."
 
 REM Asks if using Roaming Profiles
-LABEL ASKROAMINGPROFILES
+:ASKROAMINGPROFILES
 choice.exe /C ynb /M "Roaming Profiles: y/n or b to break. Timeout 30 seconds, default is No" /D n /T 30
 if %errorlevel%==3 do GOTO END
 if %errorlevel%==2 do GOTO GRAB DOWNLOADS
 if %errorlevel%==1 do GOTO ROAMINGDOWNLOADS
 
 REM Grab list of files in Downloads Folder
-LABEL GRABDOWNLOADS
+:GRABDOWNLOADS
 for /f %%f in ('dir /b %profileBase%\') do for /f %%d in ('dir /b %profileBase%\%%f\Downloads') do dir /S %profileBase%\%%f\Downloads > %reports%\downloads.out
 
 REM Get Roaming Profiles
-LABEL GETROAMINGPROFILELOCATION
+:GETROAMINGPROFILELOCATION
 
 echo "the account you are running this as must have"
 echo "permission to access the roaming profiles, likley"
@@ -159,18 +171,18 @@ else(
 	GOTO ASKROAMINGPROFILES)
 
 REM GPOINFO
-LABEL GPOINFO
+:GPOINFO
 
 gpresult.exe /Z > %reports%\gpo-info.out
 
 REM AUTORUNSETC
-LABEL AUTORUNSETC
-embeded\SysinternalSuite\autoruns.exe -ev %reports%\autoruns.arn
+:AUTORUNSETC
+
 
 REM AD Info
-LABEL ADINFO
+:ADINFO
 
 
 	
 pause
-LABEL END
+:END
