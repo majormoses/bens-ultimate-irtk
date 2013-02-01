@@ -63,6 +63,7 @@ if %debug%==1 (
 REM Get files and folders on system, sorted by date
 :FILESBYDATE
 echo 'this can take a really long time, getting started'
+if exist %reports%\files-by-date.out del %reports%\files-by-date.out
 for /f %%f in ('wmic logicaldisk get caption') do for /f %%d in ('dir %%f') do dir /O-D /S %%f\ >> %reports%\files-by-date.out
 if %debug%==1 (
 	echo '#### getting files by date completed ####' >> %reports%\debug.txt)
@@ -100,10 +101,10 @@ schtasks.exe /query /fo LIST  > %reports%\tasks.out
 
 REM List of Users
 :LISTUSERS
-IF EXSIST %HOMEDRIVE%\Users (
+if exist %HOMEDRIVE%\Users (
 	SET profileBase=%HOMEDRIVE%\Users)
 REM MUST BE XP/Server 2003
-ELSE (
+else (
 	SET profileBase="%HOMEDRIVE%\Documents and Settings")
 
 dir /B %profileBase%\* > users.out
@@ -129,7 +130,7 @@ regedit /e %reports%\registery.reg
 
 REM Tries to get a list of instaled software
 :INSTALLEDPROGRAMS
-If Exist %reports%\installed-export.out Del %reports%\installed-export.out
+if exist %reports%\installed-export.out del %reports%\installed-export.out
 regedit /e %reports%\installed-export.out "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall"
 find "DisplayName" %reports%\installed-export.out > %reports%\installed.out
 
@@ -162,7 +163,7 @@ echo "permission to access the roaming profiles, likley"
 echo "needs to be run as domain admin, or sudoer"
 
 SET /P roamingProfileBase=[Where are your roaming profiles exsist?]
-if exsist %roamingProfileBase% (
+if exist %roamingProfileBase% (
 	for /f %%f in ('dir /b %roamingProfileBase%\') ^
 	 do for /f %%d in ('dir /b %roamingProfileBase%\%%f\Downloads') ^
 	 do dir /S %roamingProfileBase%\%%f\Downloads > %reports%\roaming-downloads.out)
