@@ -20,7 +20,7 @@ REM
 REM	You should have received a copy of the GNU General Public License
 REM	along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.html/>.
 
-REM DEBUG MODE IF debug=1 debugging is enabled IF debug=0 debugging is off
+REM DEBUG MODE if debug=1 debugging is enabled if debug=0 debugging is off. Deffault is usefull for auditiong and debugging purposes.
 :DEBUGMODE
 set debug=1
 
@@ -31,6 +31,8 @@ REM set /P reports=[Where would you like these reports sent?]
 set reports=C:\Users\%USERNAME%\Desktop\sp\reports\live-capture\windows\%COMPUTERNAME%
 mkdir %reports%
 if %debug%==1 (
+	set stime=time /T
+	echo '#### start time: %stime% ####' > %reports%\debug.txt 
 	echo '#### report location completed ####' >> %reports%\debug.txt)
 	
 echo %COMPUTERNAME% > %reports%\computername.out
@@ -63,13 +65,11 @@ if %debug%==1 (
 REM Get files and folders on system, sorted by date
 :FILESBYDATE
 echo 'this can take a really long time, getting started'
-if exist %reports%\files-by-date.out del %reports%\files-by-date.out
+if exist %reports%\files-by-dat e.out del %reports%\files-by-date.out
 for /f %%f in ('wmic logicaldisk get caption') do for /f %%d in ('dir %%f') do dir /O-D /S %%f\ >> %reports%\files-by-date.out
 if %debug%==1 (
 	echo '#### getting files by date completed ####' >> %reports%\debug.txt)
-REM File/Folder tree
-:TREE
-for /f %%f in ('wmic logicaldisk get caption') do tree.com /A %%f >> %reports%\tree.out
+
 
 REM List Running Processes
 :PROCESSES
@@ -102,10 +102,10 @@ schtasks.exe /query /fo LIST  > %reports%\tasks.out
 REM List of Users
 :LISTUSERS
 if exist %HOMEDRIVE%\Users (
-	SET profileBase=%HOMEDRIVE%\Users)
+	set profileBase=%HOMEDRIVE%\Users)
 REM MUST BE XP/Server 2003
 else (
-	SET profileBase="%HOMEDRIVE%\Documents and Settings")
+	set profileBase="%HOMEDRIVE%\Documents and Settings")
 
 dir /B %profileBase%\* > users.out
 
@@ -162,7 +162,7 @@ echo "the account you are running this as must have"
 echo "permission to access the roaming profiles, likley"
 echo "needs to be run as domain admin, or sudoer"
 
-SET /P roamingProfileBase=[Where are your roaming profiles exsist?]
+set /P roamingProfileBase=[Where are your roaming profiles exsist?]
 if exist %roamingProfileBase% (
 	for /f %%f in ('dir /b %roamingProfileBase%\') ^
 	 do for /f %%d in ('dir /b %roamingProfileBase%\%%f\Downloads') ^
@@ -184,6 +184,10 @@ REM AD Info
 :ADINFO
 
 
-	
+REM Getting finished time
+if %debug%==1 (
+	set ctime=time /T
+	echo '#### completion time: %ctime% ####' >> %reports%\debug.txt)
+ 
 pause
 :END
