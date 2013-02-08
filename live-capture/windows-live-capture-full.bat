@@ -28,7 +28,7 @@ REM Default is usefull for auditiong and debugging purposes.
 set debug=1
 REM if execfilesbydate=1 it will run filebydate
 REM if execfilesbydate=0 it will not run filesbydate
-set execfilesbydate=0
+set execfilesbydate=1
 REM if execsfc=1 it will run sfc
 REM if execsfc=0 it will not run sfc
 set execsfc=0
