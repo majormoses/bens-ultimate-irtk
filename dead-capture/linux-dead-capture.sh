@@ -35,9 +35,12 @@ reports=
 #chroot
 mkdir -p /media/root/
 mount $deadCaptureRoot $chrootedSystem
-mount --bind /dev $chrootedSystem/dev
-mount --bind /proc $chrootedSystem/proc
-chroot $chrootedSystem
+mount -t proc none $chrootedSystem/proc
+mount --rbind /dev $chrootedSystem/dev
+mount --rbind /sys $chrootedSystem/sys
+chroot $chrootedSystem /bin/bash
+source /etc/profile
+export PS1="(chroot) $PS1"
 
 # firewall rules
 sudo iptables -L -V -n

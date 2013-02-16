@@ -153,7 +153,7 @@ else
 	rm $reports/md5sums.out
 	echo 'md5 values for /bin/' > $reports/md5sums.out
 	sudo md5sum /bin/* >> $reports/md5sums.out
-	echo 'md5 calues for /sbin/' >> $reports/md5sums.out
+	echo 'md5 values for /sbin/' >> $reports/md5sums.out
 	sudo md5sum /sbin/* >> $reports/md5sums.out
 	echo 'for a quick breakdown of output meaning please read man/rpm-verify.html'
 fi
