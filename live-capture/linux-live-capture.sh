@@ -1,5 +1,5 @@
 #!/bin/bash
-bash -e
+set -e
 
 #		Linux Live Capture: This software is inteded to be used
 #	for a live capture on a compromised Debian Based Server, most
@@ -61,7 +61,7 @@ opensslEnabled='false'
 
 # Mount some storage to save reports to
 # Checking for preconfigured variables
-if [ storage == 'ask' ]; then
+if [ "$storage" == 'ask' ]; then
 	echo 'where would you like me to store the reports'
 	read $storage
 fi	
