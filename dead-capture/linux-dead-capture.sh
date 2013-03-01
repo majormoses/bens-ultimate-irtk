@@ -1,5 +1,5 @@
 #!/bin/bash
-bash -e
+set -e
 
 #		Linux Live Capture: This software is inteded to be used
 #	for a live capture on a compromised Debian Based Server, most
