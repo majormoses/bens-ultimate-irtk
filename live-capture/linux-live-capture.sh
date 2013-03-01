@@ -105,6 +105,7 @@ if [ $mcap==true ]; then
 			echo 'is your distro $(distro)?, if not set this correctly otherwise please submit a bug'
 			exit
 		fi
+		fi
 	fi
 fi
 # Get hostname
@@ -139,6 +140,7 @@ else
 		echo 'try emerge -av net-alayzer/tcpdump'
 	else
 		echo 'is your distro $(distro)?, if not set this correctly otherwise please submit a bug'
+	fi
 fi
 
 # Verify Linux tools have not been tampered with
@@ -179,7 +181,7 @@ rsync -arvP /var $reports/var
 
 # get list of installed packages
 if [ $distro == 'deb' ]; then
-	dpk --get seletions > $reports/deb-installed.out
+	dpkg --get seletions > $reports/deb-installed.out
 else
 	yum list installed > $reports/yum-installed.out
 fi
