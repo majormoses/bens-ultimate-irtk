@@ -9,5 +9,5 @@ Date		Hours		Total		Desc
 2/2			2			85.5		Additional Bug Fixing
 2/8			1			86.5		Fixed bug related to grabbig userlist and downloads
 2/8			2			88.5		Added Wiki on Github
-        3     91.5    Improving Documentation on Wiki
+			3     91.5    Improving Documentation on Wiki
 
