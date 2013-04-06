@@ -29,18 +29,18 @@ set -e
 
 # storage location for reports ( if value is ask it will prompt you for the location ) If you wish to preconfigure then simply put the path to the storage location and remove quotes
 storage='ask'
-reports=/media/$storage
+reports='ask'
 
 # Whether you want  memdump (which mist be installed) valid options are true or false. default is false
 mcap=false
 # Whether you want to perform a packet capture valid oprions are true or false default is true
 pcap=true
 # length of desired packet capture this is in minutes
-pcapLen = 1
+pcapLen=1
 # Linux Distribution type: deb for any Debian based system epl for any YUM based system, gen for gentoo
-distro = 'deb'
+distro='gen'
 # Linux Tool verification methods options are: debsums (best debian results), rmp (best epl results), qcheck (best gentoo results) or md5 (fallback)
-md5check='md5'
+md5check='qcheck'
 
 # It is recomended when doing a RAM dump to send the dump elsewhere as you will lose more information 
 # by storing it locally this will be the IP or hostname of server where you have setup nc to listen on
@@ -64,13 +64,12 @@ opensslEnabled='false'
 if [ "$storage" == 'ask' ]; then
 	echo 'where would you like me to store the reports'
 	read $storage
-fi	
+fi
+
 # Mount storage
-mkdr -p /media/$reports
+mkdir -p /media/$reports
 mount $storage /media/$storage
 
-
-	
 # Copy Physical Memory; MUST HAVE memdump installed
 # Check if RAM dump is requested
 if [ $mcap==true ]; then
@@ -121,7 +120,7 @@ ps aux > $reports/processes.out
 netstat -ae > $reports/ports.out
 
 # firewall rules
-sudo iptables -L -V -n
+sudo iptables -L -V -n > $reports/firewall.out
 
 # Capture outgoing traffic for 5 minutes
 if [ $pcap == true ]; then
@@ -182,6 +181,10 @@ rsync -arvP /var $reports/var
 # get list of installed packages
 if [ $distro == 'deb' ]; then
 	dpkg --get seletions > $reports/deb-installed.out
-else
+elif [ $distro == 'epl'  ]; then
 	yum list installed > $reports/yum-installed.out
+elif [ $distr == 'gen' ]; then
+	equery list "*"
+else
+	echo 'unknown distro cant get packages installed' >> $reports/debug.log
 fi
