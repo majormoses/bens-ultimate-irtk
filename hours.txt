@@ -1,19 +1,20 @@
 70 -- previous work before SP officially started
-Date		Hours		Total		Desc
-1/15		2.5			72.5		Spoke with Carry Cantrell about SP and wrote up official spec build (added to website http://benabrams.it/sp/spec )
-1/25		2			74.5		Fixed a few bugs, added some documentation, and additional testing.
-1/28		1			75.5		Wrote Design document (added to website http://benabrams.it/sp/design )
-1/28		2			77.5		Learning EPL based systems
-1/29		3			80.5		Learning EPL based systems
-1/30		3.5			84			Installing/Learning Gentoo
-1/31		5			89			Fixed many bugs
-1/31		4			93			Installing/Learning Gentoo
-2/1			1			94			Tracking down bug
-2/2			2			96			Fixed bug (above)
-2/2			4			100			Installing/Learning Gentoo
-2/3			4			104			Inatlling/Learning Gentoo
-2/2			2			106			Additional Bug Fixing
-2/8			1			107			Fixed bug related to grabbig userlist and downloads
-2/8			2			109			Added Wiki on Github
-2/9			3			112			ImpovinIg Documentation on Wiki
-4/5			2			114			Fixing  bugs in linux-live-capture.sh
+Date			Hours	Total		Desc
+1/15			3		73			Spoke with Carry Cantrell about SP and wrote up spec.
+1/25			2		75			Fixed a few bugs, added some documentation, and additional testing.
+1/28			1		76			Wrote Design document ( added to site http://benabrams.it/sp/design )
+1/28			2		78			Learning EPL based systems
+1/29			3		81			Learning EPL based systems
+1/30			4		85			Installing/Learning Gentoo
+1/31			5		90			Fixed many bugs
+1/31			4		94			Installing/Learning Gentoo
+2/1			1		95			Tracking down bug
+2/2			2		98			Fixed bug (above)
+2/2			4		102		Installing/Learning Gentoo
+2/3			4		106		Instlling/Learning Gentoo
+2/2			2		108		Additional Bug Fixing
+2/8			1		109		Fixed bug related to grabbig userlist and downloads
+2/8			2		111		Added Wiki on Github
+2/9			3		114		ImpovinIg Documentation on Wiki
+4/5			2		116		Fixing bugs in linux-live-capture.sh
+4/18			4		120		Fixing bugs and making decisions on cuts for release version.

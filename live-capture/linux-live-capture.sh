@@ -28,8 +28,8 @@ set -e
 # CONFIG VARIABLES
 
 # storage location for reports ( if value is ask it will prompt you for the location ) If you wish to preconfigure then simply put the path to the storage location and remove quotes
-storage='ask'
-reports='ask'
+storage='/dev/sdg1'
+reports='/media/sp'
 
 # Whether you want  memdump (which mist be installed) valid options are true or false. default is false
 mcap=false
@@ -50,63 +50,72 @@ ncServer=false
 # port that NC server is listening on
 ncPort='none'
 # netcat or openssl storage location modify path as desired
-ncStorage=~/
+ncStorage=$reports/nc
+mkdir -p $ncStorage
+
 # to enable openssl please change 'false' to 'true' you must still configure ncServer,ncPort,ncStorage
 opensslEnabled='false'
 
 
 
-
-
-
-# Mount some storage to save reports to
-# Checking for preconfigured variables
-if [ "$storage" == 'ask' ]; then
-	echo 'where would you like me to store the reports'
-	read $storage
+# Whoami
+if [ "$(whoami)" != 'root' ]; then
+		echo >&2 "no.  use something like: sudo -u root $0 $*"
+		echo >&2 ' (in other words, run me as root)'
+		exit 1
 fi
 
-# Mount storage
-mkdir -p /media/$reports
-mount $storage /media/$storage
 
 # Copy Physical Memory; MUST HAVE memdump installed
 # Check if RAM dump is requested
-if [ $mcap==true ]; then
-	echo 'just a reminder, you are not capturing a RAM dump, if you want this stop and change the value of mcap to = true'
-# Checking if memdump is installed
-	if [ -f /bin/memdump || /sbin/memdump ]; then
-# Checking to see if going to memdump local
-		if [ $ncServer == 'false' ]; then
-# Using memdump locally
-			sudo memdump > $reports/memdump.out
-# Checking if openssl is requested
-			if [ $opensslEnabled == 'false' ]; then
-# Using nc to send memdump to specified nc server
-				sudo memdump | nc $ncServer $ncPort < $ncStorage/memdump.out
-# Using openssl to send memdump to the specifed nc server
-			else
-				sudo memdump | openssl s_client -connect $ncServer:$ncPort < $ncStorage/memdump.out
-	else
-		echo 'either disable RAM dump or memdump needs to be installed'
-		if [ $distro == 'deb' ]; then
-			echo 'try: sudo apt-get install memdump'
-			exit
-		elif [ $distro == 'epl' ]; then
-			echo 'either disable RAM dump or memdump needs to be installed'
-			echo 'if rpmforge is not an enabled repo please add this repo'
-			echo 'if you are insure how to do this please visit: http://www.centos.org/docs/5/html/yum/sn-using-repositories.html'
-			echo 'once enabled try: sudo yum install memdump'
-		elif [ $distro == 'gen' ]; then
-			echo 'either disable RAM dump or memdump needs to be installed'
-			echo 'depending on needed USE flags try: emerge -av app-forensics/memdump'
-		else
-			echo 'is your distro $(distro)?, if not set this correctly otherwise please submit a bug'
-			exit
-		fi
-		fi
-	fi
+if [ $mcap==false ]; then
+	echo 'just a reminder, you are not capturing a RAM dump,'
+	echo 'if you want this stop and change the value of mcap to = true'
 fi
+
+# while [ $mcap==true ]
+# do
+# 	if [ -f /bin/memdump ] || [ -f /sbin/memdump ]; then
+# # Checking to see if going to memdump local
+# 		if [ $ncServer == 'false' ]; then
+# # Using memdump locally
+# 			sudo memdump > $reports/memdump.out
+# 		fi
+# # Checking if openssl is requested
+# 		if [ $opensslEnabled == 'false' ]; then
+# # Using nc to send memdump to specified nc server
+# 			sudo memdump | nc $ncServer $ncPort < $ncStorage/memdump.out
+# 		fi
+# # Using openssl to send memdump to the specifed nc server
+# 		if [ $opensslEnabled == 'false' ]; then
+# #			sudo memdump | openssl s_client -connect $ncServer:$ncPort < $ncStorage/memdump.out
+# 			echo "I would have done an memdump over ssl but its bork"
+# 		fi
+# 	$mcap=false
+# 	else
+# 		echo 'either disable RAM dump or memdump needs to be installed'
+# 		if [ $distro == 'deb' ]; then
+# 			echo 'try: sudo apt-get install memdump'
+# 			exit
+# 		fi
+
+# 		if [ $distro == 'epl' ]; then
+# 			echo 'either disable RAM dump or memdump needs to be installed'
+# 			echo 'if rpmforge is not an enabled repo please add this repo'
+# 			echo 'if you are insure how to do this please visit: http://www.centos.org/docs/5/html/yum/sn-using-repositories.html'
+# 			echo 'once enabled try: sudo yum install memdump'
+# 		fi
+
+# 		if [ $distro == 'gen' ]; then
+# 			echo 'either disable RAM dump or memdump needs to be installed'
+# 			echo 'depending on needed USE flags try: emerge -av app-forensics/memdump'
+# 		fi
+
+# 		fi
+# done
+
+
+# Checking if memdump is installed
 # Get hostname
 hostname > $reports/hostname.out
 
@@ -125,7 +134,7 @@ sudo iptables -L -V -n > $reports/firewall.out
 # Capture outgoing traffic for 5 minutes
 if [ $pcap == true ]; then
 	#checking to make sure you have tcpdump installed
-	if [ -f /bin/tcpdump || /sbin/tcpdump ]; then
+	if [ -f /bin/tcpdump ] || [ -f /sbin/tcpdump ]; then
 	echo 'performing packet capture on all interfaces for %pcapLen minutes'
 	sudo tcpdump -G $pcapLen*60 -W 1 -w $reports/net-traffic.pcap
 	fi
@@ -143,14 +152,36 @@ else
 fi
 
 # Verify Linux tools have not been tampered with
-#debian based systems (for best results have debsums or rpm installed) otherwise more manual work is required 
+#debian based systems (for best results have debsums or rpm installed) otherwise more manual work is required
 if [ $md5check == 'debsums' ]; then
-	sudo debsums -clsg > $reports/debsums.out &
-elif [$md5check == 'rpm' ]; then
+	if [ -f /bin/debsums ] || [ -f /sbin/debsums ]; then
+		sudo debsums -clsg > $reports/debsums.out &
+	else
+		echo 'you must install debsums or use an appropriate command'
+		echo 'try sudo apt-get install debsums'
+	fi
+fi
+
+if [ $md5check == 'rpm' ]; then
+	if [ -f /bin/rpm ] || [ -f /sbin/rpm ]; then
 	sudo rpm -Va > $reports/rpm-md5.out &
-elif [ $md5check == 'qcheck' ]; then
+	else
+		echo 'you must install rpm or use an appropriate command'
+		echo 'try sudo yum install rpm'
+	fi
+fi
+
+
+if [ $md5check == 'qcheck' ]; then
+	if [ -f /usr/bin/qcheck ]; then
 	sudo qcheck * > $reports/qcheck.out &
-else
+	else
+		echo 'you must install qcheck or use an appropriate command'
+		echo 'try sudo emerge portage-utils'
+	fi
+fi
+
+if [ $md5check == 'md5' ]; then
 	rm $reports/md5sums.out
 	echo 'md5 values for /bin/' > $reports/md5sums.out
 	sudo md5sum /bin/* >> $reports/md5sums.out
@@ -168,10 +199,10 @@ lsmod > $reports/kern-modules.out
 lspci -nqkvv > $reports/hardware-drivers.out
 
 # Grab detailed information about kernel modules loaded
-for i in $(lsmod | awk '{print $1}');
-do
-	modinfo $i >> $reports/drivers-loaded.out;
-done
+# for i in $(lsmod | awk '{print $1}');
+# do
+# 	modinfo $i >> $reports/drivers-loaded.out;
+# done
 
 # grab /etc/
 rsync -arvP /etc $reports/etc
